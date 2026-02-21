@@ -7,11 +7,6 @@ export default function HomePage() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    if (!supabase) {
-      toast.error("Supabase config missing. Cannot logout.");
-      return;
-    }
-
     await supabase.auth.signOut();
     router.push("/"); // Redirect back to login
   };
