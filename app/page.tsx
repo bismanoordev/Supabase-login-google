@@ -10,6 +10,13 @@ export default function LoginPage() {
 
   // ✅ Check if already logged in
   useEffect(() => {
+    if (!supabase) {
+      console.error(
+        "Supabase client not initialized. Check environment variables.",
+      );
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) router.push("/home");
     });
@@ -27,6 +34,11 @@ export default function LoginPage() {
   }, []);
 
   const handleGoogleLogin = async () => {
+    if (!supabase) {
+      toast.error("Supabase not configured. Add env vars to Vercel.");
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       // ⚠️ Do NOT set redirectTo
