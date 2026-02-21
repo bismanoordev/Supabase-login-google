@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 export default function LoginPage() {
   const router = useRouter();
 
-  // ✅ Check if already logged in
+  // ✅ Check if already logged in and handle OAuth callback
   useEffect(() => {
     if (!supabase) {
       console.error(
@@ -17,21 +17,25 @@ export default function LoginPage() {
       return;
     }
 
+    // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.push("/home");
+      if (session) {
+        router.push("/home");
+      }
     });
 
-    // ✅ Listen for login events
+    // ✅ Listen for all auth state changes (handles OAuth callback)
     const { data: listener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (event === "SIGNED_IN" && session) {
+        console.log("Auth event:", event, "Session:", !!session);
+        if (session) {
           router.push("/home");
         }
       },
     );
 
     return () => listener.subscription.unsubscribe();
-  }, []);
+  }, [router]);
 
   const handleGoogleLogin = async () => {
     if (!supabase) {
