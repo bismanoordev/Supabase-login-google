@@ -1,11 +1,17 @@
 "use client";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function HomePage() {
   const router = useRouter();
 
   const handleLogout = async () => {
+    if (!supabase) {
+      toast.error("Supabase config missing. Cannot logout.");
+      return;
+    }
+
     await supabase.auth.signOut();
     router.push("/"); // Redirect back to login
   };
